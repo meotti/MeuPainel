@@ -72,6 +72,10 @@ class ConfigActivity : Activity() {
         raiz.addView(texto("Pareie o adaptador ELM327 no Bluetooth do celular (senha 1234 ou 0000) e escolha ele aqui. Feche o Car Scanner antes de dirigir: o adaptador só atende um app por vez.", 13f))
         botaoObd = Button(this).apply { setOnClickListener { escolherAdaptador() } }
         raiz.addView(botaoObd)
+        raiz.addView(Button(this).apply {
+            text = "Testar OBD2 agora"
+            setOnClickListener { testarObd() }
+        })
         raiz.addView(texto("Avisar quando a temperatura passar de (°C):", 14f))
         campoLimite = EditText(this).apply {
             setText(Store.limite(this@ConfigActivity).toString())
@@ -138,6 +142,45 @@ class ConfigActivity : Activity() {
                 atualizar()
             }
             .show()
+    }
+
+    /** Liga a leitura no celular e mostra, ao vivo, o que o adaptador responde. */
+    private fun testarObd() {
+        if (Store.obdEndereco(this) == null) {
+            Toast.makeText(this, "Escolha o adaptador primeiro", Toast.LENGTH_LONG).show()
+            return
+        }
+        val iniciouAqui = !Obd.ativo
+        if (iniciouAqui) Obd.iniciar(this) { _, _ -> }
+
+        val dp = resources.displayMetrics.density
+        val visor = TextView(this).apply {
+            textSize = 13f
+            typeface = android.graphics.Typeface.MONOSPACE
+            setPadding((16 * dp).toInt(), (8 * dp).toInt(), (16 * dp).toInt(), (8 * dp).toInt())
+            setTextIsSelectable(true)
+        }
+        val rolagem = ScrollView(this).apply { addView(visor) }
+        val handler = android.os.Handler(mainLooper)
+        val atualizarVisor = object : Runnable {
+            override fun run() {
+                val t = Obd.temperatura
+                visor.text = "Temperatura: " + (if (t != null) "$t °C" else "--") +
+                    "\nStatus: " + Obd.status + "\n\n" + Obd.registroTexto()
+                handler.postDelayed(this, 1000)
+            }
+        }
+        val dialogo = AlertDialog.Builder(this)
+            .setTitle("Teste do OBD2")
+            .setView(rolagem)
+            .setPositiveButton("Fechar", null)
+            .create()
+        dialogo.setOnDismissListener {
+            handler.removeCallbacks(atualizarVisor)
+            if (iniciouAqui) Obd.parar()
+        }
+        dialogo.show()
+        handler.post(atualizarVisor)
     }
 
     private fun atualizar() {
