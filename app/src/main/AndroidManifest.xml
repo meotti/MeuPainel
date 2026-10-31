@@ -16,6 +16,11 @@
         android:label="Meu Painel"
         android:theme="@android:style/Theme.Material.Light.DarkActionBar">
 
+        <!-- Obrigatório para o Android Auto listar o app -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
             android:value="1" />
