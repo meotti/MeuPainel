@@ -45,6 +45,15 @@
             </intent-filter>
         </service>
 
+        <!-- Meu Painel como "app de música": temperatura do motor na capa -->
+        <service
+            android:name=".MotorMediaService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
         <!-- Necessário para controlar o Spotify (acesso a notificações) -->
         <service
             android:name=".MidiaListener"

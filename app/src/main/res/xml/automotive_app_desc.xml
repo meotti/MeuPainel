@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <automotiveApp>
+    <!-- "media" é o tipo que o Android Auto aceita em apps instalados fora da Play Store -->
+    <uses name="media" />
     <uses name="template" />
 </automotiveApp>

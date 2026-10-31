@@ -26,17 +26,13 @@ jobs:
       - name: Compilar
         run: gradle :app:assembleDebug --no-daemon
 
-      - name: Renomear APKs
-        run: |
-          cp app/build/outputs/apk/nav/debug/app-nav-debug.apk MeuPainel.apk
-          cp app/build/outputs/apk/simples/debug/app-simples-debug.apk MeuPainel-Simples.apk
+      - name: Renomear APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk MeuPainel.apk
 
       - name: Publicar para download
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
           name: Meu Painel v${{ github.run_number }}
-          body: Baixe pelo celular e instale. MeuPainel.apk = tela com mostrador; MeuPainel-Simples.apk = versão em grade (teste).
-          files: |
-            MeuPainel.apk
-            MeuPainel-Simples.apk
+          body: Baixe o MeuPainel.apk pelo celular e instale.
+          files: MeuPainel.apk
