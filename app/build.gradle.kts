@@ -11,8 +11,33 @@ android {
         applicationId = "com.meupainel.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.2"
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    // Duas versões:
+    //  - "nav": tela inicial desenhada (mostrador). Entra no Android Auto como app de navegação.
+    //  - "simples": telas em grade/lista padrão. Entra como app de "lugares" (POI).
+    flavorDimensions += "tipo"
+    productFlavors {
+        create("nav") {
+            dimension = "tipo"
+            buildConfigField("boolean", "TELA_DESENHADA", "true")
+            manifestPlaceholders["carCategory"] = "androidx.car.app.category.NAVIGATION"
+            manifestPlaceholders["appName"] = "Meu Painel"
+        }
+        create("simples") {
+            dimension = "tipo"
+            applicationIdSuffix = ".simples"
+            versionNameSuffix = "-simples"
+            buildConfigField("boolean", "TELA_DESENHADA", "false")
+            manifestPlaceholders["carCategory"] = "androidx.car.app.category.POI"
+            manifestPlaceholders["appName"] = "Meu Painel Simples"
+        }
     }
 
     compileOptions {

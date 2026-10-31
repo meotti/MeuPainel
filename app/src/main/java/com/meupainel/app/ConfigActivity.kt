@@ -58,6 +58,7 @@ class ConfigActivity : Activity() {
         }
 
         raiz.addView(texto("Meu Painel", 24f, true))
+        raiz.addView(texto("Versão ${BuildConfig.VERSION_NAME}", 12f))
         raiz.addView(texto("O que você mudar aqui aparece na multimídia.\nListas: uma linha por item, no formato  Nome | valor"))
 
         secao(Store.DESTINOS, "Destinos favoritos",

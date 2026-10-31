@@ -13,7 +13,7 @@
 
     <application
         android:icon="@drawable/ic_app"
-        android:label="Meu Painel"
+        android:label="${appName}"
         android:theme="@android:style/Theme.Material.Light.DarkActionBar">
 
         <!-- Obrigatório para o Android Auto listar o app -->
@@ -41,7 +41,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="androidx.car.app.category.NAVIGATION" />
+                <category android:name="${carCategory}" />
             </intent-filter>
         </service>
 

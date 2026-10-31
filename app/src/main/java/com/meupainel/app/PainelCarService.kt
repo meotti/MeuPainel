@@ -59,7 +59,7 @@ class PainelSession : Session() {
         lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) { Obd.parar() }
         })
-        return InicioScreen(carContext)
+        return if (BuildConfig.TELA_DESENHADA) InicioScreen(carContext) else InicioSimplesScreen(carContext)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -278,6 +278,48 @@ class InicioScreen(ctx: CarContext) : Screen(ctx) {
             .build()
         return NavigationTemplate.Builder()
             .setActionStrip(acoes)
+            .build()
+    }
+}
+
+/** Tela inicial da versão simples: grade com a temperatura e os três atalhos. */
+class InicioSimplesScreen(ctx: CarContext) : Screen(ctx) {
+    private val handler = Handler(Looper.getMainLooper())
+    private val tick = object : Runnable {
+        override fun run() {
+            invalidate()
+            handler.postDelayed(this, 5_000)
+        }
+    }
+
+    init {
+        lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) { handler.postDelayed(tick, 5_000) }
+            override fun onStop(owner: LifecycleOwner) { handler.removeCallbacks(tick) }
+        })
+    }
+
+    override fun onGetTemplate(): Template {
+        val t = Obd.temperatura
+        fun item(titulo: String, texto: String?, res: Int, abrir: () -> Screen) =
+            androidx.car.app.model.GridItem.Builder()
+                .setTitle(titulo)
+                .apply { if (texto != null) setText(texto) }
+                .setImage(icone(carContext, res))
+                .setOnClickListener { screenManager.push(abrir()) }
+                .build()
+
+        val itens = ItemList.Builder()
+            .addItem(item(if (t != null) "$t °C" else "-- °C", "Motor", R.drawable.ic_alerta) { PainelScreen(carContext) })
+            .addItem(item("Destinos", null, R.drawable.ic_destino) { DestinosScreen(carContext) })
+            .addItem(item("Música", null, R.drawable.ic_musica) { MusicaScreen(carContext) })
+            .addItem(item("Painel", null, R.drawable.ic_painel) { PainelScreen(carContext) })
+            .build()
+
+        return androidx.car.app.model.GridTemplate.Builder()
+            .setTitle("Meu Painel")
+            .setHeaderAction(Action.APP_ICON)
+            .setSingleList(itens)
             .build()
     }
 }
